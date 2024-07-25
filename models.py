@@ -83,3 +83,20 @@ class Forecasting_Model:
         else:
             plt.savefig('forecast_image.png')
             plt.close()
+
+def run_experiment(desc,model_name,train_data,test_data,**params):
+    mlflow.set_experiment(desc)
+    with mlflow.start_run():
+        model = Forecasting_Model(model_name=model_name,train=train_data,test=test_data,**params)
+        model.fit()
+        pred = model.forecast(horizon=365)
+        wmape = model.wmape()
+        model.plot_forecast()
+        with open('model.pkl','wb') as file:
+            pickle.dump(model,file)
+        mlflow.log_metric("WMAPE", wmape)
+        mlflow.log_params(params)
+        mlflow.log_param("Model_Name",model_name)
+        mlflow.log_param("Description",desc)
+        mlflow.log_artifact('forecast_image.png')
+        mlflow.log_artifact('model.pkl')
