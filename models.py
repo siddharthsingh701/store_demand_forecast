@@ -11,6 +11,7 @@ from statsforecast import StatsForecast
 import pickle
 from lightgbm import LGBMRegressor
 from prophet import Prophet
+import os
 
 class Forecasting_Model:
     def __init__(self,model_name,train,test,**params):
@@ -100,3 +101,5 @@ def run_experiment(desc,model_name,train_data,test_data,**params):
         mlflow.log_param("Description",desc)
         mlflow.log_artifact('forecast_image.png')
         mlflow.log_artifact('model.pkl')
+        os.remove('model.pkl')
+        os.remove('forecast_image.png')
